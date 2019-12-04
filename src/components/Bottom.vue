@@ -15,7 +15,7 @@ export default {
 
 <style lang="scss" scope>
 .bottom-bar {
-  background: #595050;
+  background: rgba(53,95,125,1);
   color: white;
   height: 108px;
   width: 100%;

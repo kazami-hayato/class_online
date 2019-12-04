@@ -1,0 +1,60 @@
+$color-primary:#355f7d;
+.icon-quit{
+  background: url('~@/assets/img/quit.svg') no-repeat;
+  width: 60px;
+  height: 60px;
+  background-size: contain;
+  vertical-align: middle;
+}
+.icon-setting{
+  background: url('~@/assets/img/setting.svg') no-repeat;
+  width: 60px;
+  height: 60px;
+  background-size: contain;
+  vertical-align: middle;
+}
+.icon-catalog{
+  background: url('~@/assets/img/catalog.svg') no-repeat 50% 50%;
+  width: 28px;
+  height: 30px;
+  background-size: contain;
+  text-align: center;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+.icon-examine{
+  background: url('~@/assets/img/ic_examine.svg') no-repeat 50% 50%;
+  width: 28px;
+  height: 30px;
+  background-size: contain;
+  text-align: center;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+.icon-finalExam{
+  background: url('~@/assets/img/final_exam.svg') no-repeat 50% 50%;
+  width: 28px;
+  height: 30px;
+  background-size: contain;
+  text-align: center;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+.icon-questions{
+  background: url('~@/assets/img/folder-question.svg') no-repeat 50% 50%;
+  width: 28px;
+  height: 30px;
+  background-size: contain;
+  text-align: center;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+.icon-collection{
+  background: url('~@/assets/img/collection.svg') no-repeat 50% 50%;
+  width: 28px;
+  height: 30px;
+  background-size: contain;
+  text-align: center;
+  padding-bottom: 5px;
+  display: inline-block;
+}

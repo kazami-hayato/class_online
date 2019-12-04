@@ -51,15 +51,14 @@ export default {
 
 <style lang="scss" scope>
 .top-bar {
-  background: #595050;
+  background: rgba(53,95,125,1);
   width: 100%;
   height: 55px;
   font-family: "微软雅黑";
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   position: relative;
   .top-content {
-    width: 80%;
     display: flex;
     justify-content: space-between;
     .brand {
@@ -73,7 +72,7 @@ export default {
       .brand-name {
         background: url("../assets/personal/brand-back.png") no-repeat 0% 60%;
         color: white;
-        width: 525px;
+        width: 100%;
         line-height: 55px;
         .ch-name {
           font-size: 20px;
@@ -88,19 +87,18 @@ export default {
     }
   }
   .menu {
-      background: url("../assets/personal/menus.png") no-repeat 50% 50%;
+      background: rgba(29,64,89,1);
       position: absolute;
       width: 400px;
       height: 35px;
       background-size: cover;
-      right: 0;
-      top: 30px;
-      color: #111111;
+      right: 20px;
+      margin-top: 20px;
+      color: white;
       font-size: 12pt;
       z-index:1;
       .menu-wrap {
         list-style: none;
-        padding-left: 115px;
         margin: 0px;
         display: flex;
         justify-content: space-around;

@@ -1,6 +1,7 @@
 import routers from './routers'
 import VueRouter from 'vue-router'
 import Vue from 'vue'
+import NProgress from 'nprogress'
 Vue.use(VueRouter)
 
 const router = new VueRouter({
@@ -14,4 +15,11 @@ const router = new VueRouter({
 //     next()
 //   }
 // })
+router.beforeEach((to, from ,next) => {
+  NProgress.start()
+  next()
+})
+router.afterEach(()=>{
+  NProgress.done()
+})
 export default router

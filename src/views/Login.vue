@@ -1,12 +1,18 @@
 <template>
-  <div id="login-page">
+  <div id="login-page" v-loading="logining">
     <div class="login-box">
         <p>用户登录</p>
-        <el-input placeholder="请输入账号或手机号" prefix-icon="el-icon-user"></el-input>
-        <div style="clear:both;height:40px;"></div>
-        <el-input placeholder="请输入密码" prefix-icon="el-icon-key"></el-input>
-        <div style="clear:both;height:40px;"></div>
-        <el-button type="primary" class="login-btn" @click="login">登录</el-button>
+        <el-form :model="user">
+          <el-form-item>
+             <el-input placeholder="请输入账号或手机号" prefix-icon="el-icon-user" v-model="user.account"></el-input>
+          </el-form-item>
+          <div style="clear:both;height:10px;"></div>
+          <el-form-item>
+            <el-input placeholder="请输入密码" prefix-icon="el-icon-key" v-model="user.password" show-password clearable ></el-input>
+          </el-form-item>
+        </el-form>
+        <div style="clear:both;height:10px;"></div>
+            <el-button type="primary" class="login-btn" @click="login">登&nbsp;&nbsp;&nbsp;录</el-button>
         <div style="text-align:left">
           <el-checkbox v-model="autoLogin">自动登录</el-checkbox><span class="forget-password"> | 忘记密码</span>
         </div>
@@ -22,15 +28,34 @@
 export default {
   data(){
     return{
-      account:'',
-      password:'',
+      user:{
+        account:'',
+        password:''
+      },
       isValidated:false,
-      autoLogin:false
+      autoLogin:false,
+      logining:false
     }
   },
   methods:{
     login(){
-      console.log("login")
+      this.logining = true
+      if(this.user.account === '' || this.user.password === ''){
+          this.logining = false
+          this.$message.error('账号密码不能为空');
+      } else{
+        console.log(this.user)
+        this.$store.dispatch('login',this.user)
+            .then(()=>{
+              this.logining = false
+              console.log('登录成功！')
+              this.$router.push('/')
+            })
+            .catch((error) => {
+              this.logining = false
+              this.$message.error(error.msg)
+            })
+      }
     }
   }
 }
@@ -61,6 +86,7 @@ export default {
       background: rgba(60,108,140,1);
       border-color: rgba(60,108,140,1);
       cursor: pointer;
+      font-size: 20px;
     }
     .forget-password{
       color: #606266;

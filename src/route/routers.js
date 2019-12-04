@@ -6,6 +6,8 @@ import MyPolicy from '../views/MyPolicy'
 import Login  from '../views/Login'
 import Registe from '../views/Registe'
 import PolicyFirst from '../views/Policy-first'
+import VideoPlay from '../components/VideoPage'
+
 const childRoutes = [
   {
     path:'/personal',
@@ -35,6 +37,10 @@ const childRoutes = [
   {
     path:'/firstlogin',
     component:PolicyFirst
+  },
+  {
+    path:'/watch',
+    component:VideoPlay
   }
 ]
 const routers = [
