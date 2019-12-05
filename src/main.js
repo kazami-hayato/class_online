@@ -5,6 +5,8 @@ import ElementUI from 'element-ui'
 import Mock from './mock'
 import store from './vuex/store'
 import './assets/style/global.scss'
+import './assets/js/utils'
+
 
 Mock.bootstrap()
 Vue.config.productionTip = false

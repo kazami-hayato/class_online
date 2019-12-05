@@ -6,7 +6,7 @@
       <div id="player"></div>
       <div class="video-catalogs">
           <p class="title">{{videoName}}</p>
-          <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick">
+          <el-tree :data="catalog" :props="defaultProps" @node-click="handleNodeClick">
              <span class="custom-tree-node" slot-scope="{ node, data }">
                <i class="el-icon-video-play" v-show="data.type"></i>
                <span :title="node.label" >{{ node.label }}</span>
@@ -29,11 +29,13 @@
 </template>
 
 <script>
+import { getViewLog, getCourseCatalog} from '../api/course'
+let player = null
 export default {
   data(){
     return {
       videoName:'课程设计与开发',
-       data: [{
+       catalog: [{
           label: '第一章，毛泽东思想及其历史地位',
           type:false,
           finished:true,
@@ -45,6 +47,7 @@ export default {
               label: '毛泽东思想的形成及其历史地位',
               type:true,
               finished:true,
+              vid:'1f875362c39fb724d6864ab7a0bac42a_1'
             }]
           }]
         }, {
@@ -59,6 +62,7 @@ export default {
               label: '新民主主义革命理论形成的依据',
               type:true,
               finished:false,
+              vid:'1f875362c3d8c168e1a2966e122f372e_1'
             }]
           }, {
             label: '第二节 新民主主义革命的总路线和基本纲领',
@@ -91,29 +95,131 @@ export default {
               label: '社会主义改造道路和历史经验',
               type:true,
               finished:true,
+              vid:'1f875362c3b1ab8021c2fd039d607a25_1'
             }]
           }]
         }],
         defaultProps: {
           children: 'children',
           label: 'label'
-        }
+        },
+        currentVid:'',
+        courseId:'',
+        faceValidate:null,
+        videoDuration:1,
+        validated:false,
+        playList:[]
     }
   },
   mounted(){
+    this.courseId = this.$route.params.courseId
+    this.getCourseCatalog()
     this.initVideo()
+    this.getViewLog()
   },
   methods:{
+    /**
+     * @Author lau
+     * @Description 初始化视频
+     * @Date 2019-12-05 21:02:41 星期四
+     */
     initVideo(){
-      let player = window.polyvPlayer({
+      player = window.polyvPlayer({
         wrap: '#player',
         width: 800,
         height: 533,
-        vid: '1f875362c3d8c168e1a2966e122f372e_1',
+        vid: '1f875362c39fb724d6864ab7a0bac42a_1',
+        viewerInfo:{
+          viewerId:'abcdef',
+          viewerName:'某某某',
+          viewerAvatar:''
+        },
+        // watchStartTime:"50",
+        ban_history_time:"off",
+        // ban_seek_by_limit_time:"on"
       });
+      this.currentVid = '1f875362c39fb724d6864ab7a0bac42a_1'
+      this.setVideoInfo()
     },
+    /**
+     * @Author lau
+     * @Description 获取当前用户的观看日志
+     * @Date 2019-12-05 21:02:13 星期四
+     */
+    getViewLog(){
+      let params = {
+        vid:'1f875362c39fb724d6864ab7a0bac42a_1',
+        sessionId:'abcdef',
+        numPerPage:100,
+        pageNum:1
+      }
+      getViewLog(params).then(res => {
+        console.log(res)
+      })
+    },
+    /**
+     * @Author lau
+     * @Description 切换视频
+     * @Date 2019-12-06 00:33:37 星期五
+     */
     handleNodeClick(data){
-      console.log(data)
+      // console.log(data)
+      if(data.vid && this.currentVid !== data.vid){
+        this.changeVid(data.vid)
+      }
+    },
+    /**
+     * @Author lau
+     * @Description 换视频
+     * @Date 2019-12-06 01:15:14 星期五
+     */
+    changeVid(vid){
+        player.changeVid(vid)
+        this.currentVid = vid
+
+        this.setVideoInfo()
+    },
+    /**
+     * @Author lau
+     * @Description 获取该课程对应的播放列表树
+     * @Date 2019-12-05 22:29:40 星期四
+     */
+    getCourseCatalog(){
+      getCourseCatalog({courseId:this.courseId}).then(res => {
+          this.videoName = res.data.courseName
+          this.catalog = res.data.courseCatalog
+          
+          //To do 深度遍历目录树，获取vid组成待播放列表
+
+      }).catch(error => {
+        this.$message.error("获取播放列表失败")
+      })
+    },
+    /**
+     * @Author lau
+     * @Description 设置视频轮询事件
+     * @Date 2019-12-06 01:14:16 星期五
+     */
+    setVideoInfo(){
+      setTimeout(()=>{
+          // 人脸检测
+        this.validated = false
+        this.videoDuration = player.j2s_getDuration()
+        this.faceValidate = setInterval(()=>{
+          var sec2=player.j2s_getCurrentTime();
+          console.log(sec2/this.videoDuration)
+          if(sec2/this.videoDuration > 0.5 && !this.validated)
+            {
+              alert("进行人脸检测！")
+              this.validated = true
+            }else if(sec2/this.videoDuration>=1){
+              this.changeVid("1f875362c3d8c168e1a2966e122f372e_1")
+              clearInterval(this.faceValidate)
+              this.faceValidate = null
+            }
+        },1000)
+
+      },1000)
     }
   }
 }

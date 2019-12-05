@@ -2,7 +2,7 @@
  * @Author: lau.lucis 
  * @Date: 2019-12-04 21:25:50 
  * @Last Modified by: lau.lucis
- * @Last Modified time: 2019-12-04 21:44:18
+ * @Last Modified time: 2019-12-06 00:30:54
  */
 <template>
   <div class="personal-page">
@@ -37,8 +37,8 @@
          <el-tabs v-model="activeTab" @tab-click="handleClick">
             <el-tab-pane label="正在进行" name="first">
               <el-row :gutter="40" type="flex" style="flex-wrap:wrap;">
-                <el-col :span="5" v-for="(item) in student.courses" :key="item.vid">
-                  <div class="course">
+                <el-col :span="5" v-for="(item) in student.courses" :key="item.courseId" >
+                  <div class="course" @click="$router.push({path:'/watch',params:item.courseId})">
                     <div class="course-img">
                     </div>
                     <div class="course-info">

@@ -22,39 +22,39 @@ studentInfo.push(
         "coursename":random.ctitle(5,8),
         "totalClass":50,
         "finishedClass":random.integer(0,50),
-        "vid":random.id(),
+        "courseid":random.id(),
         "coursePost":random.url()
       },
       {
         "coursename":random.ctitle(5,8),
         "totalClass":50,
         "finishedClass":random.integer(0,50),
-        "vid":random.id(),
+        "courseid":random.id(),
         "coursePost":random.url()
       },
       {
         "coursename":random.ctitle(5,8),
         "totalClass":50,
         "finishedClass":random.integer(0,50),
-        "vid":random.id(),
+        "courseid":random.id(),
         "coursePost":random.url()
       },{
         "coursename":random.ctitle(5,8),
         "totalClass":50,
         "finishedClass":random.integer(0,50),
-        "vid":random.id(),
+        "courseid":random.id(),
         "coursePost":random.url()
       },{
         "coursename":random.ctitle(5,8),
         "totalClass":50,
         "finishedClass":random.integer(0,50),
-        "vid":random.id(),
+        "courseid":random.id(),
         "coursePost":random.url()
       },{
         "coursename":random.ctitle(5,8),
         "totalClass":50,
         "finishedClass":random.integer(0,50),
-        "vid":random.id(),
+        "courseid":random.id(),
         "coursePost":random.url()
       }
     ]

@@ -13,6 +13,7 @@
     "core-js": "^3.3.2",
     "element-ui": "^2.13.0",
     "js-cookie": "^2.2.1",
+    "js-sha1": "^0.6.0",
     "node-sass": "^4.13.0",
     "nprogress": "^0.2.0",
     "sass-loader": "^8.0.0",
@@ -42,7 +43,8 @@
     ],
     "rules": {
       "no-console": "off",
-      "no-unused-vars": "off"
+      "no-unused-vars": "off",
+      "no-debugger": "off"
     },
     "parserOptions": {
       "parser": "babel-eslint"

@@ -1,6 +1,7 @@
 import axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
 import {studentInfo,studentAuth} from './data/students'
+import courseCatalog from './data/course'
 
 export default {
   bootstrap(){
@@ -13,6 +14,11 @@ export default {
         else
           reject({code:-1,msg:'账号或密码错误',data:[]})
       })
+    })
+    mock.onGet('/CourseCatalog').reply(config => {
+       return new Promise((resolve, reject) => {
+         resolve([200,{code:200,msg:'获取成功',data:courseCatalog}])
+       })
     })
     // mock.onGet('/meterList').reply(config => {
     //   return new Promise((resolve,reject)=>{
