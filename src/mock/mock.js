@@ -2,10 +2,11 @@ import axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
 import {studentInfo,studentAuth} from './data/students'
 import courseCatalog from './data/course'
+import {httpInstance} from '../api/auth'
 
 export default {
   bootstrap(){
-    let mock = new MockAdapter(axios)
+    let mock = new MockAdapter(httpInstance)
     mock.onPost('/login').reply(config => {
       let {account,password} = JSON.parse(config.data)
       return new Promise((resolve,reject)=>{
@@ -16,6 +17,7 @@ export default {
       })
     })
     mock.onGet('/CourseCatalog').reply(config => {
+      console.log(config)
        return new Promise((resolve, reject) => {
          resolve([200,{code:200,msg:'获取成功',data:courseCatalog}])
        })

@@ -6,11 +6,13 @@
       <div id="player"></div>
       <div class="video-catalogs">
           <p class="title">{{videoName}}</p>
-          <el-tree :data="catalog" :props="defaultProps" @node-click="handleNodeClick">
+          <el-tree :data="catalog" :props="defaultProps" @node-click="handleNodeClick" :current-node-key="currentId" 
+                   :default-expand-all="true" :highlight-current="true" :check-on-click-node="true" node-key="id"
+                   ref="catalog">
              <span class="custom-tree-node" slot-scope="{ node, data }">
                <i class="el-icon-video-play" v-show="data.type"></i>
                <span :title="node.label" >{{ node.label }}</span>
-               <i :class="[data.finished?'el-icon-success play-status finished':'el-icon-success play-status']"></i>
+               <i :class="[data.finished?'el-icon-success play-status finished':'el-icon-success play-status']" v-show="data.type"></i>
              </span>
           </el-tree>
       </div>
@@ -23,14 +25,21 @@
             <li><div class="icon-questions"> </div><div>题库</div></li>
           </ul>
       </div>
+
     </div>
   </div>
+  <canvas id="camerCan" style="display:none;" width="300" height="380"></canvas>
+  <video src="" id="camerVd" style="display:none;"></video>
+  <!-- <img src="" alt="" id="img_box"> -->
 </div>  
 </template>
 
 <script>
 import { getViewLog, getCourseCatalog} from '../api/course'
 let player = null
+let myCan = null
+let myVd = null
+let img_box = null  
 export default {
   data(){
     return {
@@ -103,19 +112,25 @@ export default {
           children: 'children',
           label: 'label'
         },
-        currentVid:'',
-        courseId:'',
-        faceValidate:null,
-        videoDuration:1,
-        validated:false,
-        playList:[]
+        currentVid:'', // 当前播放视频的vid
+        courseId:'',// 课程id，由路由携带
+        faceValidate:null, // 人脸识别轮询器
+        videoDuration:1, // 视频长度
+        validated:false, // 该视频是否已人脸识别过
+        playList:[], // 播放vid列表
+        watchLastTime:0, // 上次播放位置，查viewLog得到
+        order:0, // 当前播放列表第几个
+        currentId:0, // 当前选中的栏目id
     }
   },
   mounted(){
+    myCan = document.querySelector('#camerCan')
+    myVd = document.querySelector('#camerVd')
+    img_box = document.querySelector('#img_box')
     this.courseId = this.$route.params.courseId
-    this.getCourseCatalog()
-    this.initVideo()
-    this.getViewLog()
+
+    this.getCourseCatalog() // 根据courseId获取播放目录及vid播放列表
+    console.log(this.playList)
   },
   methods:{
     /**
@@ -128,17 +143,21 @@ export default {
         wrap: '#player',
         width: 800,
         height: 533,
-        vid: '1f875362c39fb724d6864ab7a0bac42a_1',
+        vid: this.playList[0]['vid'],
         viewerInfo:{
-          viewerId:'abcdef',
+          viewerId:'abcdef', // 学员sessionId
           viewerName:'某某某',
           viewerAvatar:''
         },
-        // watchStartTime:"50",
+        watchStartTime:this.watchLastTime || 0,
         ban_history_time:"off",
-        // ban_seek_by_limit_time:"on"
+        // ban_seek_by_limit_time:"on",
+        autoplay:true
       });
-      this.currentVid = '1f875362c39fb724d6864ab7a0bac42a_1'
+      this.currentVid = this.playList[0]['vid']
+      this.currentId = this.playList[0]['id']
+      this.$refs.catalog.setCurrentKey(this.currentId)
+      console.log(this.currentId)
       this.setVideoInfo()
     },
     /**
@@ -146,15 +165,20 @@ export default {
      * @Description 获取当前用户的观看日志
      * @Date 2019-12-05 21:02:13 星期四
      */
-    getViewLog(){
+    getViewLog(vid){
       let params = {
-        vid:'1f875362c39fb724d6864ab7a0bac42a_1',
+        vid:vid,
         sessionId:'abcdef',
         numPerPage:100,
         pageNum:1
       }
       getViewLog(params).then(res => {
-        console.log(res)
+        if(res.data.length > 0){
+          this.watchLastTime = res.data[0]['playDuration']
+          this.initVideo() // 初始化视频
+        }
+      }).catch(error => {
+        console.log(error)
       })
     },
     /**
@@ -174,9 +198,15 @@ export default {
      * @Date 2019-12-06 01:15:14 星期五
      */
     changeVid(vid){
-        player.changeVid(vid)
+        this.currentId = this.playList[this.order]['id']
+        this.$refs.catalog.setCurrentKey(this.currentId)
+        let option = {
+          vid:vid,
+          autoplay:true,
+          ban_seek_by_limit_time:'on'
+        }
+        player.changeVid(option)
         this.currentVid = vid
-
         this.setVideoInfo()
     },
     /**
@@ -189,11 +219,31 @@ export default {
           this.videoName = res.data.courseName
           this.catalog = res.data.courseCatalog
           
-          //To do 深度遍历目录树，获取vid组成待播放列表
-
+          //TODO 深度遍历目录树，获取vid组成待播放列表
+          this.getPlayList(this.catalog)
+          this.getViewLog(this.playList[0]['vid']) // 获取当前视频的观看日志
       }).catch(error => {
+        console.log(error)
         this.$message.error("获取播放列表失败")
       })
+    },
+    /**
+     * @Author lau
+     * @Description 获取播放vid列表
+     * @Date 2019-12-07 00:46:36 星期六
+     */
+    getPlayList(catalog){
+      for(let i=0;i<catalog.length;i++){
+        if(catalog[i].hasOwnProperty('vid') && !catalog[i]['finished']){
+            this.playList.push({
+                'vid':catalog[i]['vid'],
+                'id':catalog[i]['id']
+            })
+        }else if(catalog[i].hasOwnProperty('children')){
+            this.getPlayList(catalog[i]['children'])
+          // console.log(catalog[i]['children'])
+        }
+      }
     },
     /**
      * @Author lau
@@ -207,19 +257,50 @@ export default {
         this.videoDuration = player.j2s_getDuration()
         this.faceValidate = setInterval(()=>{
           var sec2=player.j2s_getCurrentTime();
-          console.log(sec2/this.videoDuration)
+         // console.log(sec2/this.videoDuration)
           if(sec2/this.videoDuration > 0.5 && !this.validated)
             {
-              alert("进行人脸检测！")
+              //alert("进行人脸检测！")
               this.validated = true
+              // 人脸检测
+              this.captureImg() 
             }else if(sec2/this.videoDuration>=1){
-              this.changeVid("1f875362c3d8c168e1a2966e122f372e_1")
-              clearInterval(this.faceValidate)
-              this.faceValidate = null
+              if(this.order !== this.playList.length)
+                {
+                  this.$refs.catalog.getCurrentNode().finished = true // 修改完成状态
+                  this.changeVid(this.playList[++this.order]['vid'])
+                  clearInterval(this.faceValidate)
+                  this.faceValidate = null
+                }
             }
         },1000)
 
       },1000)
+    },
+    /**
+     * @Author lau
+     * @Description 抓取摄像头图像
+     * @Date 2019-12-06 23:30:29 星期五
+     */
+    captureImg(){
+      if(navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia){
+          navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
+          navigator.getUserMedia({video:{width:300,height:380}},(mediaStream)=>{
+            let context = myCan.getContext('2d')
+            myVd.srcObject = mediaStream
+            myVd.play()
+            setTimeout(()=>{
+              context.drawImage(myVd,0,0,300,380)
+           //   img_box.src = myCan.toDataURL("image/png")
+              let img = myCan.toDataURL("image/png");
+              // TODO 向百度API发请求，进行人脸对比
+            }, 1000)
+          },error => {	
+            this.$message.error('您的浏览器版本不支持摄像头')
+          })
+        }else{
+          this.$message.error('您的浏览器版本不支持摄像头')
+        }
     }
   }
 }
@@ -244,6 +325,7 @@ export default {
         background: #1F2123;
         width: 400px;
         height: 533px;
+        overflow-y:scroll;
         .title{
           font-size: 16px;
           margin: 12px 0 0 12px;
@@ -280,7 +362,7 @@ export default {
 .el-tree-node__label{
   font-size:14px;
 }
-.el-tree-node__content:hover,.el-tree-node:focus>.el-tree-node__content{
+.el-tree-node__content:hover,.el-tree-node:focus>.el-tree-node__content,.el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content{
   background: #494848;
   color: #ff5423
 }
