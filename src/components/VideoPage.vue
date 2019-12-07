@@ -19,8 +19,8 @@
       <div class="video-functions">
           <ul>
             <li> <div class="icon-catalog"> </div><div>目录</div></li>
-            <li><div class="icon-examine"> </div><div>阶段测试</div></li>
-            <li><div class="icon-finalExam"> </div><div>综合测评</div></li>
+            <li @click="$router.push({path:'/exam',params:{examId:'112'}})"><div class="icon-examine"> </div><div>阶段测试</div></li>
+            <li @click="$router.push({path:'/exam',params:{examId:'112'}})"><div class="icon-finalExam"> </div><div>综合测评</div></li>
             <li><div class="icon-collection"> </div><div>试题收藏</div></li>
             <li><div class="icon-questions"> </div><div>题库</div></li>
           </ul>
@@ -326,6 +326,19 @@ export default {
         width: 400px;
         height: 533px;
         overflow-y:scroll;
+        &::-webkit-scrollbar{
+          width: 12px;
+          background-color: #F5F5F5;
+        }
+        &::-webkit-scrollbar-thumb{
+            border-radius: 10px;
+            background-color: #ff5423;
+            height: 60px;
+        }
+        &::-webkit-scrollbar-track{
+            border-radius: 10px;
+            background-color: #F5F5F5;
+        }
         .title{
           font-size: 16px;
           margin: 12px 0 0 12px;
@@ -342,6 +355,7 @@ export default {
           margin: 0px;
           padding: 0px;
           li{
+            cursor: pointer;
             text-align: center;
             margin-bottom: 15px;
             height: 70px;

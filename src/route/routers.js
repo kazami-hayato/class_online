@@ -7,7 +7,7 @@ import Login  from '../views/Login'
 import Registe from '../views/Registe'
 import PolicyFirst from '../views/Policy-first'
 import VideoPlay from '../components/VideoPage'
-
+import Exam from '../views/Examination'
 const childRoutes = [
   {
     path:'/personal',
@@ -41,6 +41,10 @@ const childRoutes = [
   {
     path:'/watch',
     component:VideoPlay
+  },
+  {
+    path:'/exam',
+    component:Exam
   }
 ]
 const routers = [
